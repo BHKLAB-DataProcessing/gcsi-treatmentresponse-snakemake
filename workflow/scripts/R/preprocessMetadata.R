@@ -35,7 +35,7 @@ message("Files in the tarGZ file:", paste(files, collapse = "\n"))
 metricsFile <- grep("GRmetrics", files, value = TRUE)
 rawData <- data.table::fread(metricsFile, header = TRUE, sep = "\t")
 
-show(rawData)
+message(names(rawData))
 
 #############################################################################
 # Main Script
@@ -48,6 +48,22 @@ sampleMetadata <- rawData[, c(
 treatmentMetadata <- rawData[, c(
     "DrugName", "Norm_DrugName"
 )]
+
+# Remove duplicates
+sampleMetadata <- unique(sampleMetadata)
+treatmentMetadata <- unique(treatmentMetadata)
+# Remove empty rows
+sampleMetadata <- sampleMetadata[!is.na(sampleMetadata$CellLineName) & sampleMetadata$CellLineName != ""]
+treatmentMetadata <- treatmentMetadata[!is.na(treatmentMetadata$DrugName) & treatmentMetadata$DrugName != ""]
+
+# add 'gCSI.' prefix to all columns in both
+# sampleMetadata and treatmentMetadata
+data.table::setnames(sampleMetadata, old = colnames(sampleMetadata), new = paste0("gCSI.", colnames(sampleMetadata)))
+data.table::setnames(treatmentMetadata, old = colnames(treatmentMetadata), new = paste0("gCSI.", colnames(treatmentMetadata)))
+
+# duplicate Norm_CellLineName and Norm_DrugName columns to 'sampleid' and 'treatmentid'
+sampleMetadata[, sampleid := gCSI.CellLineName]
+treatmentMetadata[, treatmentid := gCSI.DrugName]
 
 #############################################################################
 # SAVE OUTPUT

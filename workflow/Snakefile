@@ -7,12 +7,9 @@ configfile: "config/pipeline.yaml"
 storage:
     provider="http"
 
-# rule all:
-#     input:
-#         tre = expand(
-#             dmpdirs.RESULTS / "CTRPv{release}_treatmentResponseExperiment.RDS",
-#             release=config["treatmentResponse"]["rawdata"]["release"],
-#         ),
+rule all:
+    input:
+        tre = dmpdirs.RESULTS / "gCSI_treatmentResponseExperiment.RDS",
 
 rule download_data:
     input:
@@ -42,6 +39,34 @@ rule preprocessMetadata:
         1
     script:
         dmpdirs.SCRIPTS / "R" / "preprocessMetadata.R"
+
+
+rule preprocessTreatmentResponse:
+    input:
+        tsv_path = dmpdirs.RAWDATA / "treatmentResponse" / "gCSI_GRdata_v1.3.tsv.tar.gz",
+        rds_path = dmpdirs.RAWDATA / "treatmentResponse" / "gCSI_GRdata_v1.3.rds.tar.gz",
+    output:
+        preprocessed_raw = dmpdirs.PROCDATA / "preprocessed_TreatmentResponse_raw.csv",
+        preprocessed_profiles = dmpdirs.PROCDATA / "preprocessed_TreatmentResponse_profiles.csv",
+    log:
+        dmpdirs.LOGS / "preprocessTreatmentResponse.log"
+    threads:
+        1
+    script:
+        dmpdirs.SCRIPTS / "R" / "preprocessTreatmentResponse.R"
+
+rule buildTreatmentResponseExperiment:
+    input:
+        preprocessed_raw = dmpdirs.PROCDATA / "preprocessed_TreatmentResponse_raw.csv",
+        preprocessed_profiles = dmpdirs.PROCDATA / "preprocessed_TreatmentResponse_profiles.csv",
+    output:
+        tre = dmpdirs.RESULTS / "gCSI_treatmentResponseExperiment.RDS",
+    log:
+        dmpdirs.LOGS / "buildTreatmentResponseExperiment.log"
+    threads:
+        30
+    script:
+        dmpdirs.SCRIPTS / "R" / "buildTreatmentResponseExperiment.R"
 
 # rule downloadTreatmentResponseANDMetadata:
 #     input:
