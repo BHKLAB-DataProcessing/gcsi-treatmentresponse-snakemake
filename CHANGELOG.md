@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/BHKLAB-DataProcessing/gcsi-treatmentresponse-snakemake/compare/v0.2.0...v0.3.0) (2025-05-22)
+
+
+### Features
+
+* use containers ([cab7541](https://github.com/BHKLAB-DataProcessing/gcsi-treatmentresponse-snakemake/commit/cab7541ae9e4ed7747890339d5f192439e658f86))
+
 ## [0.2.0](https://github.com/BHKLAB-DataProcessing/gcsi-treatmentresponse-snakemake/compare/v0.1.0...v0.2.0) (2025-05-22)
 
 
