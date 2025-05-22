@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/BHKLAB-DataProcessing/gcsi-treatmentresponse-snakemake/compare/v0.3.0...v0.4.0) (2025-05-22)
+
+
+### Features
+
+* update README to include download instructions for RDS file ([6ebd2c2](https://github.com/BHKLAB-DataProcessing/gcsi-treatmentresponse-snakemake/commit/6ebd2c25e1c35401a5554b78f9662964777eba0a))
+
 ## [0.3.0](https://github.com/BHKLAB-DataProcessing/gcsi-treatmentresponse-snakemake/compare/v0.2.0...v0.3.0) (2025-05-22)
 
 
