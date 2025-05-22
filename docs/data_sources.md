@@ -1,74 +1,113 @@
 # Data Sources
 
-## Overview
+## Genentech Cell Screening Initiative (gCSI) Dataset
 
-This section should document all data sources used in your project.
-Proper documentation ensures reproducibility and helps others
-understand your research methodology.
+### Overview
 
-## How to Document Your Data
+The Genentech Cell Screening Initiative (gCSI) is a pharmacogenomic resource that contains drug sensitivity data across multiple cancer cell lines. This dataset provides valuable insights into the response of cancer cells to various therapeutic agents, enabling the identification of potential biomarkers for drug sensitivity and resistance.
 
-For each data source, include the following information:
+### External Data Sources
 
-### 1. External Data Sources
+#### Cell Line Information
 
-- **Name**: Official name of the dataset
-- **Version/Date**: Version number or access date
-- **URL**: Link to the data source
-- **Access Method**: How the data was obtained (direct download, API, etc.)
-- **Access Date**: When the data was accessed/retrieved
-- **Data Format**: Format of the data (FASTQ, DICOM, CSV, etc.)
-- **Citation**: Proper academic citation if applicable
-- **License**: Usage restrictions and attribution requirements
+- **Name**: gCSI Cell Line Annotations
+- **Version/Date**: 2013
+- **URL**: https://pharmacodb.pmgenomics.ca/downloads (Original source: Genentech)
+- **Access Method**: Direct download
+- **Data Format**: Tab-separated values (TSV)
+- **Citation**: Haverty, P.M., Lin, E., Tan, J., et al. (2016). Reproducible pharmacogenomic profiling of cancer cell line panels. Nature, 533(7603), 333-337. https://doi.org/10.1038/nature17987
+- **License**: [Genentech Terms of Use](https://www.gene.com/terms-of-use)
 
-Example:
+#### Treatment Information
 
-```markdown
-## TCGA RNA-Seq Data
+- **Name**: gCSI Drug Annotations
+- **Version/Date**: 2013
+- **URL**: https://pharmacodb.pmgenomics.ca/downloads (Original source: Genentech)
+- **Access Method**: Direct download
+- **Data Format**: Tab-separated values (TSV)
+- **Citation**: Same as cell line information
+- **License**: [Genentech Terms of Use](https://www.gene.com/terms-of-use)
 
-- **Name**: The Cancer Genome Atlas RNA-Seq Data
-- **Version**: Data release 28.0 - March 2021
-- **URL**: https://portal.gdc.cancer.gov/
-- **Access Method**: GDC Data Transfer Tool
-- **Access Date**: 2021-03-15
-- **Citation**: The Cancer Genome Atlas Network. (2012). Comprehensive molecular portraits of human breast tumours. Nature, 490(7418), 61-70.
-- **License**: [NIH Genomic Data Sharing Policy](https://sharing.nih.gov/genomic-data-sharing-policy)
-```
+#### Drug Response Data
 
-### 2. Internal/Generated Data
+- **Name**: gCSI Drug Response Data
+- **Version/Date**: 2013
+- **URL**: https://pharmacodb.pmgenomics.ca/downloads (Original source: Genentech)
+- **Access Method**: Direct download
+- **Data Format**: Comma-separated values (CSV)
+- **Citation**: Same as cell line information
+- **License**: [Genentech Terms of Use](https://www.gene.com/terms-of-use)
 
-- **Name**: Descriptive name of the dataset
-- **Creation Date**: When the data was generated
-- **Creation Method**: Brief description of how the data was created
-- **Input Data**: What source data was used
-- **Processing Scripts**: References to scripts/Github Repo used to generate this data
+### Processed Data
 
-Example:
+#### Sample Metadata (sampleMetadata.tsv)
 
-```markdown
-## Processed RNA-Seq Data
-- **Name**: Processed RNA-Seq Data for TCGA-BRCA
-- **Creation Date**: 2021-04-01
-- **Creation Method**: Processed using kallisto and DESeq2
-- **Input Data**: FASTQ Data obtained from the SRA database
-- **Processing Scripts**: [GitHub Repo](https://github.com/tcga-brca-rnaseq)
-```
+- **Name**: Preprocessed Sample Metadata
+- **Input Data**: gCSI Cell Line Annotations
+- **Processing Scripts**: `workflow/scripts/R/preprocessMetadata.R`
+- **Output Location**: `metadata/sampleMetadata.tsv`
 
-### 3. Data Dictionary
+| Column Name            | Description                    | Example Values            |
+| ---------------------- | ------------------------------ | ------------------------- |
+| gCSI.CellLineName      | Original cell line name        | MC116, SK-BR-3, SU-DHL-1  |
+| gCSI.PrimaryTissue     | Primary tissue of origin       | Lymph Node, Breast, Blood |
+| gCSI.Norm_CellLineName | Normalized cell line name      | MC116, SKBR3, SUDHL1      |
+| sampleid               | Standardized sample identifier | MC116, SK-BR-3, SU-DHL-1  |
 
-For complex datasets, include a data dictionary that explains:
+#### Treatment Metadata (treatmentMetadata.tsv)
 
-| Column Name | Data Type | Description | Units | Possible Values |
-|-------------|-----------|-------------|-------|-----------------|
-| patient_id  | string    | Unique patient identifier | N/A | TCGA-XX-XXXX format |
-| age         | integer   | Patient age at diagnosis | years | 18-100 |
-| expression  | float     | Gene expression value | TPM | Any positive value |
+- **Name**: Preprocessed Treatment Metadata
+- **Input Data**: gCSI Drug Annotations
+- **Processing Scripts**: `workflow/scripts/R/preprocessMetadata.R`
+- **Output Location**: `metadata/treatmentMetadata.tsv`
 
-## Best Practices
+| Column Name        | Description               | Example Values                       |
+| ------------------ | ------------------------- | ------------------------------------ |
+| gCSI.DrugName      | Original drug name        | Vinblastine, Vincristine, Paclitaxel |
+| gCSI.Norm_DrugName | Normalized drug name      | VINBLASTINE, VINCRISTINE, PACLITAXEL |
+| treatmentid        | Standardized treatment ID | Vinblastine, Vincristine, Paclitaxel |
 
-- Store raw data in `data/rawdata/` and never modify it
-- Store processed data in `data/procdata/` and all code used to generate it should be in `workflow/scripts/`
-- Document all processing steps
-- Track data provenance (where data came from and how it was modified)
-- Respect data usage agreements and licenses!
-    This is especially important for data that should not be shared publicly
+#### Treatment Response: Profiles
+
+- **Name**: Preprocessed Treatment Response Profiles
+- **Input Data**: gCSI Drug Response Data
+- **Processing Scripts**: `workflow/scripts/R/preprocessTreatmentResponse.R`
+- **Output Location**: `data/procdata/preprocessed_TreatmentResponse_profiles.csv`
+
+| Column Name      | Description                          | Units/Notes                                      |
+| ---------------- | ------------------------------------ | ------------------------------------------------ |
+| treatmentid      | Drug identifier                      | Same as `treatmentid` in metadata                |
+| sampleid         | Cell line identifier                 | Same as `sampleid` in metadata                   |
+| ExperimentNumber | Identifier for the experiment        | 2c, 2d, etc.                                     |
+| meanviability    | Mean viability across concentrations | Percentage                                       |
+| GR_AOC           | Growth Rate Area Over Curve          | Metric for overall drug effect                   |
+| GRmax            | Maximum growth rate inhibition       | Negative values indicate growth inhibition       |
+| Emax             | Maximum effect level                 | Percentage inhibition at highest concentration   |
+| GRinf            | GR value at infinite concentration   | Growth rate inhibition at infinite concentration |
+| GEC50            | Half maximal effective concentration | μM (micromolar), based on GR metrics             |
+| GR50             | Concentration at GR value of 0.5     | μM (micromolar)                                  |
+| R_square_GR      | R-squared for GR curve fitting       | Measure of fit quality, values from 0 to 1       |
+| pval_GR          | P-value for GR curve fitting         | Statistical significance of the curve fit        |
+| flat_fit_GR      | Flat fit flag for GR curve           | 0 (not flat) or 1 (flat fit)                     |
+| h_GR             | Hill slope for GR curve              | Steepness of the dose-response curve             |
+
+#### Treatment Response: Raw
+
+- **Name**: Preprocessed Raw Treatment Response
+- **Input Data**: gCSI Drug Response Data
+- **Processing Scripts**: `workflow/scripts/R/preprocessTreatmentResponse.R`
+- **Output Location**: `data/procdata/preprocessed_TreatmentResponse_raw.csv`
+
+| Column Name      | Description                    | Units/Notes                             |
+| ---------------- | ------------------------------ | --------------------------------------- |
+| treatmentid      | Drug identifier                | Same as `treatmentid` in metadata       |
+| sampleid         | Cell line identifier           | Same as `sampleid` in metadata          |
+| tissue           | Tissue of origin               | Lymph Node, Breast, Blood, etc.         |
+| ExperimentNumber | Identifier for the experiment  | 2b, 2c, 2d, etc.                        |
+| TrtDuration      | Treatment duration             | Hours                                   |
+| doublingtime     | Cell line doubling time        | Hours                                   |
+| dose             | Drug concentration             | μM (micromolar)                         |
+| viability        | Cell viability at given dose   | Percentage, values relative to control  |
+| GR               | Growth rate value              | Growth rate-adjusted drug effect        |
+| activities.mean  | Mean activity                  | Mean percentage of inhibition or growth |
+| activities.std   | Standard deviation of activity | Standard deviation of percentage values |
