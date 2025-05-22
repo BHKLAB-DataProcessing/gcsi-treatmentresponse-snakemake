@@ -36,8 +36,8 @@ rule preprocessMetadata:
         treatmentMetadata = dmpdirs.METADATA / "treatmentMetadata.tsv",
     log:
         "logs/metadata/preprocess_metadata_annotated.log"
-    threads:
-        1
+    container:
+        CONTAINER
     script:
         dmpdirs.SCRIPTS / "R" / "preprocessMetadata.R"
 
@@ -51,8 +51,8 @@ rule preprocessTreatmentResponse:
         preprocessed_profiles = dmpdirs.PROCDATA / "preprocessed_TreatmentResponse_profiles.csv",
     log:
         dmpdirs.LOGS / "preprocessTreatmentResponse.log"
-    threads:
-        1
+    container:
+        CONTAINER
     script:
         dmpdirs.SCRIPTS / "R" / "preprocessTreatmentResponse.R"
 
@@ -64,63 +64,9 @@ rule buildTreatmentResponseExperiment:
         tre = dmpdirs.RESULTS / "gCSI_treatmentResponseExperiment.RDS",
     log:
         dmpdirs.LOGS / "buildTreatmentResponseExperiment.log"
+    container:
+        CONTAINER
     threads:
         30
     script:
         dmpdirs.SCRIPTS / "R" / "buildTreatmentResponseExperiment.R"
-
-# rule downloadTreatmentResponseANDMetadata:
-#     input:
-#         metadata_tsv=HTTP.remote(config["treatmentResponse_and_Metadata"]["TSV_files"]),
-#         metadata_rds=HTTP.remote(config["treatmentResponse_and_Metadata"]["RDS_files"]),
-#     output:
-#         metadata_tsv="rawdata/TreatmentResponse_and_Metadata/gCSI_GRdata_v1.3.tsv.tar.gz",
-#         metadata_rds="rawdata/TreatmentResponse_and_Metadata/gCSI_GRdata_v1.3.rds.tar.gz",
-#     shell:
-#         """
-#         mv {input.metadata_tsv} {output.metadata_tsv} && \
-#         mv {input.metadata_rds} {output.metadata_rds}
-#         """
-# rule preprocessMetadata:
-#     input:
-#         tr=dmpdirs.RAWDATA / "treatmentResponse" / "CTRPv{release}.zip",
-#     output:
-#         rawSampleMetadata=dmpdirs.METADATA  / "CTRPv{release}_sampleMetadata.tsv",
-#         rawTreatmentMetadata=dmpdirs.METADATA  / "CTRPv{release}_treatmentMetadata.tsv",
-#     container:
-#         CONTAINER
-#     log:
-#         dmpdirs.LOGS / "CTRPv{release}_preprocess_Metadata.log",
-#     script:
-#         dmpdirs.SCRIPTS / "R" / "preprocessMetadata.R"
-
-
-# rule preprocessTreatmentResponse:
-#     input:
-#         tr=dmpdirs.RAWDATA / "treatmentResponse" / "CTRPv{release}.zip",
-#         treatmentMetadata=dmpdirs.METADATA / "CTRPv{release}_treatmentMetadata.tsv",
-#         sampleMetadata=dmpdirs.METADATA / "CTRPv{release}_sampleMetadata.tsv",
-#     container:
-#         CONTAINER
-#     output:
-#         preprocessed_raw=dmpdirs.PROCDATA / "CTRPv{release}_preprocessed_TreatmentResponse_raw.csv",
-#     log:
-#         dmpdirs.LOGS / "{release}" / "preprocessTreatmentResponse.log",
-#     script:
-#         dmpdirs.SCRIPTS / "R" / "preprocessTreatmentResponse.R"
-
-# rule buildTreatmentResponseExperiment:
-#     input:
-#         preprocessed_raw=dmpdirs.PROCDATA / "CTRPv{release}_preprocessed_TreatmentResponse_raw.csv",
-#     output:
-#         tre=dmpdirs.RESULTS / "CTRPv{release}_treatmentResponseExperiment.RDS",
-#     log:
-#         dmpdirs.LOGS / "{release}" / "buildTreatmentResponseExperiment.log",
-#     container:
-#         CONTAINER
-#     threads: 
-#         30
-#     resources:
-#         mem_mb = 50000
-#     script:
-#         dmpdirs.SCRIPTS / "R" / "buildTreatmentResponseExperiment.R"
