@@ -1,0 +1,16 @@
+name: CTRPv2-Pipeline
+description: |
+    GR-based drug response dataset from Genentech
+    [Link to Data Page](http://research-pub.gene.com/gCSI_GRvalues2019/)
+    - Drugs and Cell Lines per drug
+      - http://research-pub.gene.com/gCSI_GRvalues2019/Cell_lines_per_drug.txt
+    - http://research-pub.gene.com/gCSI_GRvalues2019/gCSI_GRdata_v1.3.rds.tar.gz
+    - http://research-pub.gene.com/gCSI_GRvalues2019/gCSI_GRdata_v1.3.tsv.tar.gz
+
+# Configure Data URLs
+treatmentResponse:
+    rawdata:
+        RDS_files:
+            url: http://research-pub.gene.com/gCSI_GRvalues2019/gCSI_GRdata_v1.3.rds.tar.gz
+        TSV_files:
+            url: http://research-pub.gene.com/gCSI_GRvalues2019/gCSI_GRdata_v1.3.tsv.tar.gz
