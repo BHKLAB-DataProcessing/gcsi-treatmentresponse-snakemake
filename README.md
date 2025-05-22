@@ -4,7 +4,7 @@
 
 **Contact:** [bhklab.jermiahjoseph@gmail.com](mailto:bhklab.jermiahjoseph@gmail.com)
 
-**Description:** Create TRE for gCSI
+**Description:** Create TRE for gCSI using Snakemake
 
 --------------------------------------
 
